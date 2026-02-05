@@ -28,14 +28,12 @@ def get_daily_series(base_val, sliders_dict, mp, qp, yp):
     daily = pd.Series(base_val, index=all_days)
     running = base_val
 
-    # Apply Meeting Changes from Next Business Day
     for d_str in sorted(fomc_dates):
         m_date = pd.Timestamp(d_str)
         next_biz = m_date + usb
         running += sliders_dict[d_str] / 100
         daily.loc[next_biz:] = running
 
-    # Apply Turn Premiums on Last Working Day
     for (year, month), group in daily.groupby([daily.index.year, daily.index.month]):
         month_biz = [d for d in group.index if d in biz_days_set]
         if month_biz:
