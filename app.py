@@ -65,9 +65,10 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 with tab1:
     total_change = sum(sliders_dict.values())
-    st.write(f"Total Scenario Policy Change: {total_change:+.2f} bps")
+    st.write("Total Scenario Policy Change: {:+.2f} bps".format(total_change))
 
     fig = go.Figure()
+
     fig.add_trace(go.Scatter(
         x=effr_daily.index,
         y=effr_daily,
@@ -96,7 +97,7 @@ with tab2:
     col = 'EFFR_Avg' if "ZQ" in contract_type else 'SOFR_Avg'
     diff_bps = (df.loc[month_b, col] - df.loc[month_a, col]) * 100
 
-    st.write(f"Spread Change: {diff_bps:+.4f} bps")
+    st.write("Spread Change: {:+.4f} bps".format(diff_bps))
 
     fig = go.Figure()
     fig.add_bar(
@@ -113,11 +114,12 @@ with tab2:
 
 with tab3:
     col = 'ZQ_Outright' if "ZQ" in contract_type else 'SR1_Outright'
-    p1, p2 = df.loc[month_a, col], df.loc[month_b, col]
+    p1 = df.loc[month_a, col]
+    p2 = df.loc[month_b, col]
 
-    st.write(f"{month_a}: {p1:.4f}")
-    st.write(f"{month_b}: {p2:.4f}")
-    st.write(f"Price Delta: {p2-p1:+.4f}")
+    st.write("{}: {:.4f}".format(month_a, p1))
+    st.write("{}: {:.4f}".format(month_b, p2))
+    st.write("Price Delta: {:+.4f}".format(p2 - p1))
 
     fig = go.Figure()
     fig.add_bar(x=[month_a, month_b], y=[p1, p2])
@@ -135,4 +137,15 @@ with tab4:
     basis_a = df.loc[month_a, 'Basis']
     basis_b = df.loc[month_b, 'Basis']
 
-    st.write(f"Basis
+    st.write("Basis {}: {:+.4f} bps".format(month_a, basis_a))
+    st.write("Basis {}: {:+.4f} bps".format(month_b, basis_b))
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=df.index,
+        y=df['Basis'],
+        mode='lines+markers'
+    ))
+
+    fig.update_layout(template="plotly_dark", height=500)
+    st.plotly_chart(fig, use_container_width=True)
